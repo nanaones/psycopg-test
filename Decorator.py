@@ -19,11 +19,12 @@ def time_print(function):
 
 # Only Use 'pg_query*'
 def save_resp_time(function):
-    def func(*args, _save=False, _log_save_folder_path='./', **kwargs):
+    def func(*args, _save=False, _log_save_folder_path='./', _functions_name=["pg_query", "pg_query_pool"], **kwargs):
         if _save:
             _function_name = function.__name__
             _file_name = f"{_log_save_folder_path}{_function_name}{ str(datetime.datetime.now()).split(' ')[0]}"
-            if ((_function_name == "pg_query") or (_function_name == "pg_query_pool")): 
+            # if ((_function_name == "pg_query") or (_function_name == "pg_query_pool")): 
+            if _function_name in _functions_name:
                 _start_time = time.time()
                 function(*args, **kwargs)
                 _end_time = time.time()
@@ -35,8 +36,12 @@ def save_resp_time(function):
                                                 time.strftime('%Y-%m-%d %H:%M:%s', time.gmtime(_start_time)),
                                                 time.strftime('%Y-%m-%d %H:%M:%s', time.gmtime(_end_time)),
                                                 str(_end_time -_start_time)))
-
             else:
                 raise Error.DBSaveError()
 
     return func
+
+
+# def _save_csv():
+# def _save_json():
+    

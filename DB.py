@@ -3,6 +3,7 @@ from psycopg2 import pool
 from RequestsToDB import RequestsToDB
 import Decorator
 
+@Decorator.save_resp_time
 def pg_query( _query, 
             user = RequestsToDB().config_data.get("DB", "user"), 
             password = RequestsToDB().config_data.get("DB", "password"),
