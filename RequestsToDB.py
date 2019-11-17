@@ -3,7 +3,7 @@ from configparser import ConfigParser
 
 class RequestsToDB:
     
-    def __init__(self, _configpath='./config.ini'):
+    def __init__(self, _configpath='./config/config.ini'):
         self.config_data = self._config(path=_configpath)     
         
     def _config(self, _configParser=ConfigParser, path='', _print=False):
