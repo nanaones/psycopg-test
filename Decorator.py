@@ -20,7 +20,14 @@ def time_print(function):
 
 # Only Use 'pg_query*'
 def save_resp_time(function):
-    def func(*args, _log_type="json" or "csv", _save=False, _log_save_folder_path='./', _functions_name=["pg_query", "pg_query_pool"], **kwargs):
+    def func(
+            _log_type="json",
+            _save=False, 
+            _log_save_folder_path='./', 
+            _functions_name=["pg_query", "pg_query_pool"],
+            *args,  
+            **kwargs):
+
         _now_time = CustomTime(_time_zone=RequestsToDB().config_data.get("TIME", "timeZone"))
         if _save:
             _function_name = function.__name__
@@ -39,8 +46,8 @@ def save_resp_time(function):
                     _log_file.save_json()
                 elif _log_type == "csv":
                     _log_file.save_csv()
-                else:
-                    raise Error.LogFileFormatError()
+                # else:
+                #     raise Error.LogFileFormatError()
             else:
                 raise Error.DBSaveError()
         else: 
