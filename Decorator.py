@@ -31,7 +31,7 @@ def save_resp_time(function):
         _now_time = CustomTime(_time_zone=RequestsToDB().config_data.get("TIME", "timeZone"))
         if _save:
             _function_name = function.__name__
-            _file_name = f"{_log_save_folder_path}{_function_name}/{ str(_now_time.now).split(' ')[0]}"
+            _file_name = f"{_log_save_folder_path}{_function_name}-{ str(_now_time.now).split(' ')[0]}"
             if _function_name in _functions_name:
                 _start_time = time.time()
                 function(*args, **kwargs)
@@ -46,8 +46,8 @@ def save_resp_time(function):
                     _log_file.save_json()
                 elif _log_type == "csv":
                     _log_file.save_csv()
-                # else:
-                #     raise Error.LogFileFormatError()
+                else:
+                    raise Error.LogFileFormatError()
             else:
                 raise Error.DBSaveError()
         else: 
