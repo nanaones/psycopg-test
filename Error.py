@@ -20,3 +20,10 @@ class TimeZoneError(ABErrorClass):
 
     def __str__(self):
         return self.msg
+
+class LogFileFormatError(ABErrorClass):
+    def __init__(self, msg="Plz check logfileformat ('_log_type')"):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg

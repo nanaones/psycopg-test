@@ -22,14 +22,18 @@ class MainClass:
         for _num in range(self._loop):
             pg_query_pool(_query=str(self.query).replace("?", 
                                                          f"'{_message} - {str(_num)}'"),
-                                                         _save = self.log_save, _log_save_folder_path=self.log_save_path)        
+                                                         _save = self.log_save, 
+                                                         _log_save_folder_path=self.log_save_path,
+                                                         _log_type="json")        
 
     @Decorator.time_print
     def loop_query(self, _message="basic"):
         for _num in range(self._loop):
             pg_query(_query=str(self.query).replace("?", 
                                                     f"'{_message} - {str(_num)}'"),
-                                                         _save = self.log_save, _log_save_folder_path=self.log_save_path)        
+                                                         _save = self.log_save, 
+                                                         _log_save_folder_path=self.log_save_path,        
+                                                         _log_type="json")        
 
 
 if __name__ == "__main__":
