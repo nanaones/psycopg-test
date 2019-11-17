@@ -1,11 +1,16 @@
 import json
 from configparser import ConfigParser
+import os
+
 
 class RequestsToDB:
     
-    def __init__(self, _configpath='./config/config.ini'):
+    def __init__(self, _configpath='./config/config.ini'):        
+        if not os.getenv("CONFIGPATH") is None:
+            _configpath = os.getenv("CONFIGPATH")
+            
         self.config_data = self._config(path=_configpath)     
-        
+
     def _config(self, _configParser=ConfigParser, path='', _print=False):
         """
         add path & add configparser obj it will print sections and values in config file
