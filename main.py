@@ -13,9 +13,10 @@ class MainClass:
                                                     "INSERT")
         self.log_save_path = RequestsToDB().config_data.get("LOG", 
                                                     "logSavePath")
-
         self.log_save = RequestsToDB().config_data.getboolean("LOG", 
                                                     "logSave")
+        self.log_type = RequestsToDB().config_data.get("LOG", 
+                                                    "logType")
         
     @Decorator.time_print
     def loop_query_pool(self, _message="pool"):
@@ -24,7 +25,7 @@ class MainClass:
                                                          f"'{_message} - {str(_num)}'"),
                                                          _save = self.log_save, 
                                                          _log_save_folder_path=self.log_save_path,
-                                                         _log_type="json")        
+                                                         _log_type=self.log_type)        
 
     @Decorator.time_print
     def loop_query(self, _message="basic"):
@@ -33,7 +34,7 @@ class MainClass:
                                                     f"'{_message} - {str(_num)}'"),
                                                          _save = self.log_save, 
                                                          _log_save_folder_path=self.log_save_path,        
-                                                         _log_type="json")        
+                                                         _log_type=self.log_type)        
 
 
 if __name__ == "__main__":
