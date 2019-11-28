@@ -66,15 +66,29 @@ def pg_query_pool(
         print(port)
         print(dbname)
     try:
-        postgreSQL_pool = psycopg2.pool.SimpleConnectionPool(dsn=None, 
-                                                minconn=1, 
-                                                maxconn=20,
-                                                user=user,
-                                                password=password,
-                                                host=host,
-                                                port=port,
-                                                dbname=dbname
-                                                )
+        if _thread == "single" :
+            postgreSQL_pool = psycopg2.pool.SimpleConnectionPool(
+                                                    dsn=None, 
+                                                    minconn=1, 
+                                                    maxconn=20,
+                                                    user=user,
+                                                    password=password,
+                                                    host=host,
+                                                    port=port,
+                                                    dbname=dbname
+                                                    )
+        elif _thread == "multi" :
+            postgreSQL_pool = psycopg2.pool.ThreadedConnectionPool( 
+                                                    dsn=None, 
+                                                    minconn=1, 
+                                                    maxconn=20,
+                                                    user=user,
+                                                    password=password,
+                                                    host=host,
+                                                    port=port,
+                                                    dbname=dbname
+                                                    )
+        else: raise DBPoolThreadValueError()
 
         with postgreSQL_pool.getconn() as connection:
             with connection.cursor() as cursor:
@@ -90,54 +104,3 @@ def pg_query_pool(
             
     except (Exception, DatabaseError) as error:
         print("Error while connecting PostgreSQL", error)
-    
-@Decorator.save_resp_time
-def pg_query_pool_with( 
-            _query, 
-            user = RequestsToDB().config_data.get("DB", "user"), 
-            password = RequestsToDB().config_data.get("DB", "password"),
-            host = RequestsToDB().config_data.get("DB", "host"),
-            port = RequestsToDB().config_data.get("DB", "port"),
-            database = RequestsToDB().config_data.get("DB", "database"),
-            _printing = False,
-            _return = False
-             ):
-    postgreSQL_pool = False
-
-    if _printing:
-        print(user)
-        print(password)
-        print(host)
-        print(port)
-        print(database)
-    try:
-        with psycopg2.pool.SimpleConnectionPool(
-                                                1, 
-                                                20,
-                                                user=user,
-                                                password=password,
-                                                host=host,
-                                                port=port,
-                                                database=database
-                                                ) as postgreSQL_pool:
-
-            connection  = postgreSQL_pool.getconn()
-            cursor = connection.cursor()
-            cursor.execute(_query)
-            connection.commit()
-            
-            if _printing:
-                print("successfully connect to PostgreSQL ")
-                if(postgreSQL_pool):
-                    print("Connection pool created successfully")
-            if _return:
-                rows = cursor.fetchall()
-                if len(rows)>0:
-                    return rows
-                
-            cursor.close()
-            connection.close()
-                
-    except (Exception, psycopg2.DatabaseError) as error:
-        print("Error while connecting PostgreSQL", error)
-            
