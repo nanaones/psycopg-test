@@ -27,3 +27,10 @@ class LogFileFormatError(ABErrorClass):
 
     def __str__(self):
         return self.msg
+
+class DBPoolThreadValueError(ABErrorClass):
+    def __init__(self, msg="Check out thread options. It must be both single or multi."):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
