@@ -19,20 +19,35 @@ class MainClass:
                                                     "logType")
         
     @Decorator.time_print
-    def loop_query_pool(self, _message="pool", _thread="single"):
+    def loop_query_pool_single(self, _message="pool", _thread="single"):
         for _num in range(self._loop):
-            pg_query_pool(_query=str(self.query).replace("?", 
-                                                         f"'{_message} - {str(_num)}'"),
-                                                         _save = self.log_save, 
-                                                         _log_save_folder_path=self.log_save_path,
-                                                         _log_type=self.log_type,
-                                                         _thread=_thread)        
+            pg_query_pool(_query=str(self.query).\
+                        replace("?", f"'{_message*10} - {str(_num)}'"),
+                        _save = self.log_save, 
+                        _log_save_folder_path=self.log_save_path,
+                        _log_type=self.log_type,
+                        _thread=_thread,
+                        _printing=False,
+                        minconn=1)
+
+    @Decorator.time_print
+    def loop_query_pool(self, _message="pool", _thread="single", minconn=1):
+        _query=[str(self.query).replace("?", f"'{_message*10} - {str(_num)}'")  for _num in range(self._loop)]
+        pg_query_pool(_query=_query,
+                        _save = self.log_save, 
+                        _log_save_folder_path=self.log_save_path,
+                        _log_type=self.log_type,
+                        _thread=_thread,
+                        _printing=False,
+                        minconn=1)
+
+
 
     @Decorator.time_print
     def loop_query(self, _message="basic"):
         for _num in range(self._loop):
             pg_query(_query=str(self.query).replace("?", 
-                                                    f"'{_message} - {str(_num)}'"),
+                                                    f"'{_message*10} - {str(_num)}'"),
                                                          _save = self.log_save, 
                                                          _log_save_folder_path=self.log_save_path,        
                                                          _log_type=self.log_type)        
@@ -40,7 +55,11 @@ class MainClass:
 
 if __name__ == "__main__":
     main = MainClass(_loop=int(sys.argv[1]))
-    main.loop_query_pool(_thread="single")
-    main.loop_query_pool(_thread="multi")
+    main.loop_query_pool_single(_thread="single")
+    time.sleep(5)
+    print("sleep")
+    main.loop_query_pool(_thread="multi", minconn=10)
+    time.sleep(5)
+    print("sleep")
     main.loop_query()
     

@@ -1,8 +1,8 @@
-import psycopg2
-from psycopg2 import pool, DatabaseError
+from psycopg2 import pool, DatabaseError, connect
 from RequestsToDB import RequestsToDB
-import Decorator
 from Error import DBPoolThreadValueError
+
+import Decorator
 
 @Decorator.save_resp_time
 def pg_query( _query, 
@@ -23,7 +23,7 @@ def pg_query( _query,
         print(port)
         print(database)
     try:
-        with psycopg2.connect(user=user.replace('"',""),
+        with connect(user=user.replace('"',""),
                                         password=password.replace('"',""),
                                         host=host.replace('"',""),
                                         port=int(port.replace('"',"")),
@@ -53,7 +53,8 @@ def pg_query_pool(
             dbname = RequestsToDB().config_data.get("DB", "database"),
             _printing = False,
             _return = False,
-            _thread = "single"
+            _thread = "single",
+            minconn = 1
              ):
 
     if not _thread in ["single", "multi"]:
@@ -65,9 +66,10 @@ def pg_query_pool(
         print(host)
         print(port)
         print(dbname)
+
     try:
         if _thread == "single" :
-            postgreSQL_pool = psycopg2.pool.SimpleConnectionPool(
+            postgreSQL_pool = pool.SimpleConnectionPool(
                                                     dsn=None, 
                                                     minconn=1, 
                                                     maxconn=20,
@@ -77,10 +79,17 @@ def pg_query_pool(
                                                     port=port,
                                                     dbname=dbname
                                                     )
+
+            make_connect(
+                        postgreSQL_pool=postgreSQL_pool, 
+                        _query=_query, 
+                        _printing=_printing, 
+                        _return=_return)
+
         elif _thread == "multi" :
-            postgreSQL_pool = psycopg2.pool.ThreadedConnectionPool( 
+            postgreSQL_pool = pool.ThreadedConnectionPool( 
                                                     dsn=None, 
-                                                    minconn=1, 
+                                                    minconn=minconn,
                                                     maxconn=20,
                                                     user=user,
                                                     password=password,
@@ -88,19 +97,32 @@ def pg_query_pool(
                                                     port=port,
                                                     dbname=dbname
                                                     )
+
+            run_connect(postgreSQL_pool, _query, _printing, _return, minconn=minconn)
+
         else: raise DBPoolThreadValueError()
 
-        with postgreSQL_pool.getconn() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(_query)
-                connection.commit()
-                
-                if _printing:
-                    print("successfully connect to PostgreSQL ")
-                if _return:
-                    rows = cursor.fetchall()
-                    if len(rows)>0:
-                        return rows
-            
     except (Exception, DatabaseError) as error:
         print("Error while connecting PostgreSQL", error)
+
+def run_connect(postgreSQL_pool, _query, _printing, _return, minconn):
+    _list = list(divide_list(_list=_query, minconn=minconn))
+    [[make_connect( postgreSQL_pool=postgreSQL_pool, _query=_sub, _printing=_printing, _return=_return) for _sub in _lis ] for _lis in _list]
+
+def make_connect(postgreSQL_pool, _query, _printing, _return):
+    with postgreSQL_pool.getconn() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(_query)
+            connection.commit()
+            if _printing:
+                print("successfully connect to PostgreSQL ")
+            if _return:
+                rows = cursor.fetchall()
+                if len(rows)>0:
+                    return rows
+            cursor.close()
+            postgreSQL_pool.putconn(connection)
+
+def divide_list(_list=[], minconn=1): 
+    for i in range(0, len(_list), minconn): 
+        yield _list[i:i + minconn] 
