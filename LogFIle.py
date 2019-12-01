@@ -23,7 +23,7 @@ class LogFile(SaveLog):
 
 
     def save_json(self):
-        with open(self._file_name, "a") as file:
+        with open(self._file_name+".json", "a") as file:
             file.write("""{"now" : "%s", "start" : "%s", "end" : "%s", "time" : "%s"} \n""" %(
                                         self._now_time.now,
                                         time.strftime('%Y-%m-%d %H:%M:%s', time.gmtime(self._start_time)),
