@@ -22,7 +22,7 @@ class MainClass:
     def loop_query_pool_single(self, _message="pool", _thread="single", _save = True ,_log_save_folder_path="/logs/", _log_type="json"):
         for _num in range(self._loop):
             pg_query_pool(_query=str(self.query).\
-                        replace("?", f"'{_message*10} - {str(_num)}'"),
+                        replace("?", f"'{_message} - {str(_num)}'"),
                         _save = _save, 
                         _log_save_folder_path=_log_save_folder_path,
                         _log_type=self.log_type,
@@ -32,7 +32,7 @@ class MainClass:
 
     @Decorator.time_print
     def loop_query_pool(self, _message="pool", _thread="single", minconn=1, _save = True ,_log_save_folder_path="/logs/", _log_type="json"):
-        _query=[str(self.query).replace("?", f"'{_message*10} - {str(_num)}'")  for _num in range(self._loop)]
+        _query=[str(self.query).replace("?", f"'{_message} - {str(_num)}'")  for _num in range(self._loop)]
         pg_query_pool(_query=_query,
                         _save = _save, 
                         _log_save_folder_path=_log_save_folder_path,
@@ -45,7 +45,7 @@ class MainClass:
     def loop_query(self, _message="basic", _save = True ,_log_save_folder_path="/logs/", _log_type="json"):
         for _num in range(self._loop):
             pg_query(_query=str(self.query).replace("?", 
-                                                    f"'{_message*10} - {str(_num)}'"),
+                                                    f"'{_message} - {str(_num)}'"),
                                                          _save = _save, 
                                                          _log_save_folder_path=_log_save_folder_path,        
                                                          _log_type=_log_type)
