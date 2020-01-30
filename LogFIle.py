@@ -1,5 +1,5 @@
 import time
-
+import json
 class SaveLog:
     def __init__(self, _file_name, _now_time, _start_time, _end_time):
         self._file_name = _file_name 
@@ -22,9 +22,12 @@ class LogFile(SaveLog):
                                         str(self._end_time - self._start_time)))
 
 
-    def save_json(self):
+    def save_json(self):      
+        _json = {
+                "now":     str(self._now_time.now), 
+                "start":   time.strftime("""%Y-%m-%d %H:%M:%S""", time.gmtime(self._start_time)), 
+                "end":     time.strftime("""%Y-%m-%d %H:%M:%S""", time.gmtime(self._end_time)), 
+                "time":    float(self._end_time - self._start_time)
+                }
         with open(self._file_name+".json", "a") as file:
-            file.write({"now" : self._now_time.now, 
-                        "start" : time.strftime('%Y-%m-%d %H:%M:%s', time.gmtime(self._start_time)), 
-                        "end" : time.strftime('%Y-%m-%d %H:%M:%s', time.gmtime(self._end_time)), 
-                        "time" : self._end_time - self._start_time))}
+            json.dump(_json, file)
