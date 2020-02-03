@@ -100,7 +100,7 @@ By default,
 
 ```json
 
-{"now" : "%Y-%m-%d %H:%M:%s+%Z", "start" : "%Y-%m-%d %H:%M:%s", "end" : "%Y-%m-%d %H:%M:%s", "time" : "%s"} \n
+{"now" : "%Y-%m-%d %H:%M:%s+%Z", "start" : "%Y-%m-%d %H:%M:%S", "end" : "%Y-%m-%d %H:%M:%s", "time" : "%f"} \n
 ```
 
 2. csv
